@@ -3,47 +3,154 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { getCollection } from 'astro:content';
+import FormattedDate from '../components/FormattedDate.astro';
+
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+).slice(0, 5);
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="ja">
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 	</head>
 	<body>
 		<Header />
 		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This template
-				serves as a lightweight, minimally-styled starting point for anyone looking to build a personal
-				website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to
-				<a href="https://docs.astro.build/">read the docs</a>
-				or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out
-				<a href="https://github.com/Charca/astro-blog-template">astro-blog-template</a>
-				by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
+			<section class="hero">
+				<h1>転勤族ママの<br />お金と暮らし</h1>
+				<p>引越しのたびにリセットされる生活。それでも、家計を整えて安心できる暮らしを作るためのヒントをお届けします。</p>
+				<a href="/blog" class="btn">記事を読む →</a>
+			</section>
+
+			<section class="latest-posts">
+				<h2>最新記事</h2>
+				<ul>
+					{posts.map((post) => (
+						<li>
+							<a href={`/blog/${post.slug}/`}>
+								{post.data.heroImage && (
+									<img src={post.data.heroImage} alt={post.data.title} loading="lazy" />
+								)}
+								<div class="post-info">
+									<span class="date"><FormattedDate date={post.data.pubDate} /></span>
+									<h3>{post.data.title}</h3>
+									<p class="excerpt">{post.data.description}</p>
+								</div>
+							</a>
+						</li>
+					))}
+				</ul>
+				<div class="more-link">
+					<a href="/blog">記事をもっと見る →</a>
+				</div>
+			</section>
 		</main>
 		<Footer />
 	</body>
 </html>
+
+<style>
+	main {
+		max-width: 800px;
+		margin: 0 auto;
+		padding: 0 1em;
+	}
+	.hero {
+		text-align: center;
+		padding: 4em 1em 3em;
+		background: linear-gradient(135deg, #fff5f7 0%, #fff 100%);
+		border-radius: 12px;
+		margin: 2em 0;
+	}
+	.hero h1 {
+		font-size: 2.2em;
+		line-height: 1.4;
+		color: var(--accent);
+		margin-bottom: 0.5em;
+	}
+	.hero p {
+		color: #555;
+		font-size: 1.05em;
+		max-width: 500px;
+		margin: 0 auto 1.5em;
+		line-height: 1.8;
+	}
+	.btn {
+		display: inline-block;
+		background: var(--accent);
+		color: white;
+		padding: 0.7em 1.8em;
+		border-radius: 30px;
+		text-decoration: none;
+		font-weight: bold;
+		transition: opacity 0.2s;
+	}
+	.btn:hover { opacity: 0.85; }
+
+	.latest-posts h2 {
+		font-size: 1.3em;
+		border-left: 4px solid var(--accent);
+		padding-left: 0.6em;
+		margin-bottom: 1.2em;
+	}
+	.latest-posts ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+	.latest-posts li {
+		margin-bottom: 1.5em;
+	}
+	.latest-posts li a {
+		display: flex;
+		gap: 1em;
+		text-decoration: none;
+		color: inherit;
+		border: 1px solid #eee;
+		border-radius: 8px;
+		overflow: hidden;
+		transition: box-shadow 0.2s;
+	}
+	.latest-posts li a:hover {
+		box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+	}
+	.latest-posts img {
+		width: 140px;
+		height: 100px;
+		object-fit: cover;
+		flex-shrink: 0;
+	}
+	.post-info {
+		padding: 0.8em;
+		flex: 1;
+	}
+	.date {
+		font-size: 0.8em;
+		color: #999;
+	}
+	.post-info h3 {
+		margin: 0.3em 0 0.4em;
+		font-size: 1em;
+		line-height: 1.5;
+	}
+	.excerpt {
+		font-size: 0.85em;
+		color: #666;
+		margin: 0;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+	.more-link {
+		text-align: center;
+		margin: 2em 0 3em;
+	}
+	.more-link a {
+		color: var(--accent);
+		font-weight: bold;
+	}
+</style>
