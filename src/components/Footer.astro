@@ -2,41 +2,106 @@
 const today = new Date();
 ---
 
-<footer>
-	<p>© {today.getFullYear()} てんままのお金と暮らしブログ. All rights reserved.</p>
-	<p class="sub">転勤族ママが実践する、家計管理・節約・老後資金の記録</p>
-	<nav class="footer-nav">
-		<a href="/privacy-policy">プライバシーポリシー</a>
-		<a href="/about">プロフィール</a>
-	</nav>
+<footer class="site-footer">
+  <div class="footer-inner wrap">
+
+    <!-- ロゴ＆説明 -->
+    <div class="footer-brand">
+      <a href="/" class="footer-logo-link">
+        <span class="footer-icon">☕</span>
+        <div>
+          <div class="footer-name">てんままのお金と暮らしブログ</div>
+          <div class="footer-desc">転勤族ママが実践する家計管理・節約・老後資金の記録</div>
+        </div>
+      </a>
+    </div>
+
+    <!-- ナビ -->
+    <nav class="footer-nav">
+      <a href="/blog">記事一覧</a>
+      <a href="/about">プロフィール</a>
+      <a href="/privacy-policy">プライバシーポリシー</a>
+    </nav>
+
+  </div>
+
+  <!-- コピーライト -->
+  <div class="footer-copy">
+    <div class="wrap">
+      © {today.getFullYear()} てんままのお金と暮らしブログ
+    </div>
+  </div>
 </footer>
+
 <style>
-	footer {
-		padding: 2em 1em 4em 1em;
-		background: linear-gradient(var(--gray-gradient)) no-repeat;
-		color: rgb(var(--gray));
-		text-align: center;
-	}
-	footer p {
-		margin: 0.3em 0;
-	}
-	.sub {
-		font-size: 0.85em;
-		color: rgb(var(--gray));
-	}
-	.footer-nav {
-		margin-top: 1em;
-		display: flex;
-		justify-content: center;
-		gap: 1.5em;
-	}
-	.footer-nav a {
-		color: rgb(var(--gray));
-		text-decoration: none;
-		font-size: 0.85em;
-	}
-	.footer-nav a:hover {
-		color: rgb(var(--gray-dark));
-		text-decoration: underline;
-	}
+.site-footer {
+  margin-top: 4em;
+  background: var(--bg-muted);
+  border-top: 1px solid var(--border);
+}
+
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2em;
+  flex-wrap: wrap;
+  padding-top: 2.2em;
+  padding-bottom: 2em;
+}
+
+/* ブランド */
+.footer-brand {}
+.footer-logo-link {
+  display: flex;
+  align-items: center;
+  gap: 0.7em;
+  color: var(--text-dark);
+  text-decoration: none;
+}
+.footer-logo-link:hover { opacity: 0.8; color: var(--text-dark); }
+
+.footer-icon { font-size: 1.8em; }
+.footer-name {
+  font-weight: 700;
+  font-size: 0.92em;
+  font-family: 'Noto Serif JP', serif;
+  color: var(--text-dark);
+}
+.footer-desc {
+  font-size: 0.72em;
+  color: var(--text-light);
+  margin-top: 0.2em;
+}
+
+/* ナビ */
+.footer-nav {
+  display: flex;
+  gap: 1.5em;
+  flex-wrap: wrap;
+}
+.footer-nav a {
+  color: var(--text-light);
+  font-size: 0.8em;
+  transition: color 0.2s;
+}
+.footer-nav a:hover { color: var(--accent-dark); }
+
+/* コピーライト */
+.footer-copy {
+  background: var(--bg-warm);
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-size: 0.72em;
+  padding: 0.7em 1em;
+  color: var(--text-light);
+}
+
+@media (max-width: 600px) {
+  .footer-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.2em;
+  }
+}
 </style>

@@ -1,53 +1,169 @@
 ---
 import { SITE_TITLE } from '../consts';
-import HeaderLink from './HeaderLink.astro';
 ---
 
-<header>
-	<nav>
-		<h2><a href="/">{SITE_TITLE}</a></h2>
-		<div class="internal-links">
-			<HeaderLink href="/">ホーム</HeaderLink>
-			<HeaderLink href="/blog">記事一覧</HeaderLink>
-			<HeaderLink href="/about">プロフィール</HeaderLink>
-		</div>
-	</nav>
-</header>
-<style>
-	header {
-		margin: 0;
-		padding: 0 1em;
-		background: white;
-		box-shadow: 0 2px 8px rgba(var(--black), 5%);
-	}
-	h2 {
-		margin: 0;
-		font-size: 1em;
-	}
+<header class="site-header">
 
-	h2 a,
-	h2 a.active {
-		text-decoration: none;
-		color: var(--accent);
-	}
-	nav {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-	}
-	nav a {
-		padding: 1em 0.5em;
-		color: var(--black);
-		border-bottom: 4px solid transparent;
-		text-decoration: none;
-	}
-	nav a.active {
-		text-decoration: none;
-		border-bottom-color: var(--accent);
-	}
-	@media (max-width: 720px) {
-		h2 {
-			font-size: 0.85em;
-		}
-	}
+  <!-- ロゴエリア -->
+  <div class="header-top wrap">
+    <a href="/" class="logo-link">
+      <span class="logo-icon">☕</span>
+      <div class="logo-text">
+        <span class="logo-sub">転勤族ママの</span>
+        <span class="logo-main">お金と暮らし</span>
+        <span class="logo-en">kurashi &amp; money</span>
+      </div>
+    </a>
+
+    <!-- ハンバーガー -->
+    <button class="hamburger" id="hamburger" aria-label="メニューを開く" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <!-- ナビゲーション -->
+  <nav class="nav-bar" id="navBar" aria-hidden="true">
+    <ul class="nav-list wrap">
+      <li><a href="/">ホーム</a></li>
+      <li><a href="/blog">記事一覧</a></li>
+      <li><a href="/about">プロフィール</a></li>
+      <li><a href="/privacy-policy">プライバシーポリシー</a></li>
+    </ul>
+  </nav>
+
+</header>
+
+<script>
+  const btn  = document.getElementById('hamburger');
+  const nav  = document.getElementById('navBar');
+  btn?.addEventListener('click', () => {
+    const isOpen = nav?.classList.toggle('open');
+    btn.setAttribute('aria-expanded', String(isOpen));
+    nav?.setAttribute('aria-hidden', String(!isOpen));
+    btn.classList.toggle('open');
+  });
+</script>
+
+<style>
+/* ===== ヘッダー全体 ===== */
+.site-header {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 8px rgba(90,70,50,0.07);
+}
+
+/* ===== ロゴエリア ===== */
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.75em;
+  padding-bottom: 0.75em;
+}
+
+.logo-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65em;
+  color: var(--text-dark);
+  text-decoration: none;
+}
+.logo-link:hover { opacity: 0.8; color: var(--text-dark); }
+
+.logo-icon { font-size: 2em; line-height: 1; }
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+.logo-sub  { font-size: 0.62em; color: var(--text-light); }
+.logo-main {
+  font-size: 1.15em;
+  font-weight: 700;
+  font-family: 'Noto Serif JP', serif;
+  color: var(--text-dark);
+}
+.logo-en {
+  font-size: 0.58em;
+  color: var(--accent-light);
+  letter-spacing: 0.1em;
+}
+
+/* ===== ナビゲーション ===== */
+.nav-bar {
+  background: var(--bg-muted);
+  border-top: 1px solid var(--border);
+}
+
+.nav-list {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  gap: 0;
+}
+
+.nav-list li a {
+  display: block;
+  color: var(--text);
+  padding: 0 1.3em;
+  line-height: 46px;
+  font-size: 0.85em;
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+.nav-list li a:hover {
+  background: rgba(160,128,96,0.12);
+  color: var(--accent-dark);
+}
+
+/* ===== ハンバーガー ===== */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5em;
+}
+.hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: all 0.3s;
+}
+.hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px,5px); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px,-5px); }
+
+/* ===== モバイル ===== */
+@media (max-width: 768px) {
+  .hamburger { display: flex; }
+
+  .nav-bar {
+    display: none;
+    border-top: 1px solid var(--border);
+  }
+  .nav-bar.open { display: block; }
+
+  .nav-list {
+    flex-direction: column;
+    gap: 0;
+  }
+  .nav-list li a {
+    line-height: 1;
+    padding: 0.9em 1.2em;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9em;
+  }
+}
 </style>

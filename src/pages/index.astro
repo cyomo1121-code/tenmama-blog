@@ -2,155 +2,693 @@
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
+import FormattedDate from '../components/FormattedDate.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import { getCollection } from 'astro:content';
-import FormattedDate from '../components/FormattedDate.astro';
 
-const posts = (await getCollection('blog')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-).slice(0, 5);
+const allPosts = (await getCollection('blog')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+const newPosts      = allPosts.slice(0, 6);
+const pickupPosts   = allPosts.slice(0, 3);
+
+const categories = [
+  { label: '家計管理・節約',    emoji: '💰', slug: '家計',  desc: '先取り貯金・家計簿・節約術' },
+  { label: '転勤・引越し',      emoji: '📦', slug: '転勤',  desc: '転勤族ならではのお金の話' },
+  { label: '資産形成・つみたて', emoji: '🌱', slug: '資産',  desc: 'NISA・iDeCo・老後資金' },
+  { label: '暮らしの工夫',      emoji: '🏠', slug: '暮らし', desc: '引越し先での生活づくり' },
+  { label: '働き方・キャリア',  emoji: '💼', slug: '仕事',  desc: '転勤族妻の仕事と向き合い方' },
+];
 ---
 
 <!doctype html>
 <html lang="ja">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header />
-		<main>
-			<section class="hero">
-				<h1>転勤族ママの<br />お金と暮らし</h1>
-				<p>引越しのたびにリセットされる生活。それでも、家計を整えて安心できる暮らしを作るためのヒントをお届けします。</p>
-				<a href="/blog" class="btn">記事を読む →</a>
-			</section>
+<head>
+  <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+</head>
+<body>
+  <Header />
 
-			<section class="latest-posts">
-				<h2>最新記事</h2>
-				<ul>
-					{posts.map((post) => (
-						<li>
-							<a href={`/blog/${post.slug}/`}>
-								{post.data.heroImage && (
-									<img src={post.data.heroImage} alt={post.data.title} loading="lazy" />
-								)}
-								<div class="post-info">
-									<span class="date"><FormattedDate date={post.data.pubDate} /></span>
-									<h3>{post.data.title}</h3>
-									<p class="excerpt">{post.data.description}</p>
-								</div>
-							</a>
-						</li>
-					))}
-				</ul>
-				<div class="more-link">
-					<a href="/blog">記事をもっと見る →</a>
-				</div>
-			</section>
-		</main>
-		<Footer />
-	</body>
+  <div class="page-wrap">
+
+    <!-- ========== HERO ========== -->
+    <section class="hero wrap">
+      <div class="hero-text">
+        <p class="hero-catch">転勤族ママの、等身大のお金と暮らし</p>
+        <h1 class="hero-title">引越し5回でも<br>毎月7.5万円を<br>積み立てられた理由</h1>
+        <p class="hero-desc">
+          専業主婦・共働き・育休……いろんな働き方を経験した転勤族ママが、
+          家計管理・節約・老後資金づくりのリアルをお届けします。
+        </p>
+        <a href="/blog" class="hero-btn">記事をよむ →</a>
+      </div>
+      <div class="hero-visual">
+        <img
+          src="/images/IMG_9997-150x150.png"
+          alt="ちょもん"
+          class="hero-avatar"
+        />
+        <div class="hero-badge">
+          <span class="badge-num">7.5万円</span>
+          <span class="badge-label">毎月の先取り積立</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== CATEGORY BANNERS ========== -->
+    <section class="cat-section wrap">
+      <h2 class="section-title">
+        <span class="section-deco">—</span> カテゴリから探す <span class="section-deco">—</span>
+      </h2>
+      <div class="cat-grid">
+        {categories.map((cat) => (
+          <a href="/blog" class="cat-card">
+            <span class="cat-emoji">{cat.emoji}</span>
+            <span class="cat-label">{cat.label}</span>
+            <span class="cat-desc">{cat.desc}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- ========== MAIN + SIDEBAR ========== -->
+    <div class="content-wrap wrap">
+
+      <main class="main-col">
+
+        <!-- 新着記事 -->
+        <section class="new-section">
+          <h2 class="section-title left">
+            <span class="section-icon">📝</span> 新着記事
+          </h2>
+
+          <div class="post-grid">
+            {newPosts.map((post) => (
+              <a href={`/blog/${post.id}/`} class="post-card">
+                <div class="post-thumb">
+                  {post.data.heroImage
+                    ? <img src={post.data.heroImage} alt={post.data.title} loading="lazy" />
+                    : <div class="post-ph">☕</div>
+                  }
+                  {post.data.categories?.[0] &&
+                    <span class="post-cat-label">{post.data.categories[0]}</span>
+                  }
+                </div>
+                <div class="post-body">
+                  {post.data.categories?.[0] &&
+                    <span class="post-badge">{post.data.categories[0]}</span>
+                  }
+                  <h3 class="post-title">{post.data.title}</h3>
+                  <p class="post-excerpt">{post.data.description}</p>
+                  <p class="post-date"><FormattedDate date={post.data.pubDate} /></p>
+                </div>
+              </a>
+            ))}
+          </div>
+
+          <div class="more-wrap">
+            <a href="/blog" class="more-btn">すべての記事をみる →</a>
+          </div>
+        </section>
+
+        <!-- ピックアップ -->
+        <section class="pickup-section">
+          <h2 class="section-title left">
+            <span class="section-icon">🌿</span> ピックアップ
+          </h2>
+          <div class="pickup-list">
+            {pickupPosts.map((post) => (
+              <a href={`/blog/${post.id}/`} class="pickup-card">
+                <div class="pickup-thumb">
+                  {post.data.heroImage
+                    ? <img src={post.data.heroImage} alt={post.data.title} loading="lazy" />
+                    : <div class="post-ph">☕</div>
+                  }
+                </div>
+                <div class="pickup-body">
+                  {post.data.categories?.[0] &&
+                    <span class="post-badge">{post.data.categories[0]}</span>
+                  }
+                  <h3 class="pickup-title">{post.data.title}</h3>
+                  <p class="pickup-excerpt">{post.data.description}</p>
+                  <span class="pickup-more">続きをよむ →</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+
+      </main>
+
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+
+        <!-- プロフィール -->
+        <div class="widget">
+          <h3 class="widget-title">✏️ プロフィール</h3>
+          <div class="widget-body profile-widget">
+            <div class="profile-avatar">
+              <img src="/images/IMG_9997-150x150.png" alt="ちょもん" />
+            </div>
+            <p class="profile-name">ちょもん</p>
+            <p class="profile-bio">
+              転勤族のママ。引越し5回の経験から、暮らしとお金の工夫を発信中。毎月7.5万円の先取り積立で家計を安定させてきました。
+            </p>
+            <a href="/about" class="profile-btn">もっとみる →</a>
+          </div>
+        </div>
+
+        <!-- カテゴリー -->
+        <div class="widget">
+          <h3 class="widget-title">📂 カテゴリー</h3>
+          <div class="widget-body">
+            <ul class="cat-list">
+              {categories.map((cat) => (
+                <li>
+                  <a href="/blog">
+                    <span class="cat-list-emoji">{cat.emoji}</span>
+                    {cat.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <!-- よく読まれている -->
+        <div class="widget">
+          <h3 class="widget-title">🔥 よく読まれている記事</h3>
+          <div class="widget-body">
+            <ul class="popular-list">
+              {allPosts.slice(0, 5).map((post, i) => (
+                <li>
+                  <a href={`/blog/${post.id}/`} class="popular-item">
+                    <span class="popular-num">{i + 1}</span>
+                    <span class="popular-title">{post.data.title}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+
+    <!-- ========== PROFILE BAND ========== -->
+    <section class="profile-band wrap">
+      <div class="profile-band-inner">
+        <img src="/images/IMG_9997-150x150.png" alt="ちょもん" class="profile-band-avatar" />
+        <div class="profile-band-text">
+          <p class="profile-band-name">ちょもん について</p>
+          <p class="profile-band-bio">
+            30代・2児の母。夫の転勤で5回の引越しを経験。最初は家計管理なんてできなかったけど、今は毎月7.5万円を先取り積立中。転勤族ママでもできる貯金術と、新しい土地での暮らしづくりを発信しています。
+          </p>
+          <a href="/about" class="profile-band-btn">プロフィールをよむ →</a>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /page-wrap -->
+
+  <Footer />
+</body>
 </html>
 
 <style>
-	main {
-		max-width: 800px;
-		margin: 0 auto;
-		padding: 0 1em;
-	}
-	.hero {
-		text-align: center;
-		padding: 4em 1em 3em;
-		background: linear-gradient(135deg, #fff5f7 0%, #fff 100%);
-		border-radius: 12px;
-		margin: 2em 0;
-	}
-	.hero h1 {
-		font-size: 2.2em;
-		line-height: 1.4;
-		color: var(--accent);
-		margin-bottom: 0.5em;
-	}
-	.hero p {
-		color: #555;
-		font-size: 1.05em;
-		max-width: 500px;
-		margin: 0 auto 1.5em;
-		line-height: 1.8;
-	}
-	.btn {
-		display: inline-block;
-		background: var(--accent);
-		color: white;
-		padding: 0.7em 1.8em;
-		border-radius: 30px;
-		text-decoration: none;
-		font-weight: bold;
-		transition: opacity 0.2s;
-	}
-	.btn:hover { opacity: 0.85; }
+.page-wrap { padding-bottom: 0; }
 
-	.latest-posts h2 {
-		font-size: 1.3em;
-		border-left: 4px solid var(--accent);
-		padding-left: 0.6em;
-		margin-bottom: 1.2em;
-	}
-	.latest-posts ul {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-	}
-	.latest-posts li {
-		margin-bottom: 1.5em;
-	}
-	.latest-posts li a {
-		display: flex;
-		gap: 1em;
-		text-decoration: none;
-		color: inherit;
-		border: 1px solid #eee;
-		border-radius: 8px;
-		overflow: hidden;
-		transition: box-shadow 0.2s;
-	}
-	.latest-posts li a:hover {
-		box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-	}
-	.latest-posts img {
-		width: 140px;
-		height: 100px;
-		object-fit: cover;
-		flex-shrink: 0;
-	}
-	.post-info {
-		padding: 0.8em;
-		flex: 1;
-	}
-	.date {
-		font-size: 0.8em;
-		color: #999;
-	}
-	.post-info h3 {
-		margin: 0.3em 0 0.4em;
-		font-size: 1em;
-		line-height: 1.5;
-	}
-	.excerpt {
-		font-size: 0.85em;
-		color: #666;
-		margin: 0;
-		display: -webkit-box;
-		-webkit-line-clamp: 2;
-		-webkit-box-orient: vertical;
-		overflow: hidden;
-	}
-	.more-link {
-		text-align: center;
-		margin: 2em 0 3em;
-	}
-	.more-link a {
-		color: var(--accent);
-		font-weight: bold;
-	}
+/* ===== SECTION TITLE ===== */
+.section-title {
+  font-size: 0.88em;
+  font-weight: 700;
+  color: var(--text-light);
+  text-align: center;
+  letter-spacing: 0.12em;
+  margin-bottom: 1.6em;
+  font-family: 'Noto Sans JP', sans-serif;
+}
+.section-title.left { text-align: left; color: var(--text-dark); font-size: 1em; }
+.section-deco { color: var(--accent-light); }
+.section-icon { margin-right: 0.3em; }
+
+/* ===== HERO ===== */
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2em;
+  padding-top: 3em;
+  padding-bottom: 3em;
+}
+
+.hero-text { flex: 1; }
+
+.hero-catch {
+  font-size: 0.8em;
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin: 0 0 0.6em;
+}
+.hero-title {
+  font-size: clamp(1.5em, 3.5vw, 2.1em);
+  font-family: 'Noto Serif JP', serif;
+  color: var(--text-dark);
+  line-height: 1.55;
+  margin: 0 0 0.7em;
+}
+.hero-desc {
+  font-size: 0.88em;
+  color: var(--text);
+  line-height: 1.9;
+  margin: 0 0 1.4em;
+}
+.hero-btn {
+  display: inline-block;
+  background: var(--accent);
+  color: var(--white);
+  padding: 0.65em 2em;
+  border-radius: var(--radius-pill);
+  font-size: 0.9em;
+  font-weight: 700;
+  transition: background 0.25s, transform 0.2s;
+}
+.hero-btn:hover {
+  background: var(--accent-dark);
+  color: var(--white);
+  transform: translateY(-1px);
+}
+
+.hero-visual {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8em;
+}
+.hero-avatar {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 5px solid var(--white);
+  box-shadow: var(--shadow);
+}
+.hero-badge {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 0.5em 1em;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+.badge-num {
+  display: block;
+  font-size: 1.3em;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: 'Noto Serif JP', serif;
+}
+.badge-label {
+  display: block;
+  font-size: 0.65em;
+  color: var(--text-light);
+}
+
+/* ===== CATEGORY BANNERS ===== */
+.cat-section {
+  padding: 2.5em 0 3em;
+  border-top: 1px solid var(--border-light);
+}
+
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.8em;
+}
+
+.cat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3em;
+  padding: 1.2em 0.5em;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  transition: transform 0.25s, box-shadow 0.25s;
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+  color: var(--text-dark);
+}
+.cat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+  color: var(--text-dark);
+}
+.cat-emoji { font-size: 1.6em; line-height: 1; }
+.cat-label { font-size: 0.75em; font-weight: 700; line-height: 1.4; }
+.cat-desc  { font-size: 0.65em; color: var(--text-light); line-height: 1.4; }
+
+/* ===== MAIN + SIDEBAR LAYOUT ===== */
+.content-wrap {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 2.5em;
+  align-items: start;
+  padding-top: 0.5em;
+  padding-bottom: 3em;
+}
+
+/* ===== POST GRID（新着記事） ===== */
+.new-section { margin-bottom: 3em; }
+
+.post-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.post-card {
+  display: flex;
+  gap: 1em;
+  padding: 1em 0;
+  border-bottom: 1px solid var(--border-light);
+  text-decoration: none;
+  color: var(--text);
+  transition: opacity 0.2s;
+  align-items: flex-start;
+}
+.post-card:hover { opacity: 0.82; }
+.post-card:first-child { padding-top: 0; }
+
+.post-thumb {
+  flex-shrink: 0;
+  width: 150px;
+  aspect-ratio: 4/3;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--bg-warm);
+  position: relative;
+}
+.post-thumb img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+.post-ph {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8em; color: var(--border);
+}
+.post-cat-label {
+  position: absolute;
+  top: 0.35em; left: 0.35em;
+  background: var(--accent);
+  color: var(--white);
+  font-size: 0.62em;
+  padding: 0.2em 0.6em;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+}
+
+.post-body { flex: 1; min-width: 0; }
+.post-badge {
+  display: inline-block;
+  background: var(--accent-pale);
+  color: var(--accent-dark);
+  font-size: 0.68em;
+  padding: 0.15em 0.7em;
+  border-radius: var(--radius-pill);
+  margin-bottom: 0.4em;
+  font-weight: 700;
+}
+.post-title {
+  font-size: 0.95em;
+  font-weight: 700;
+  color: var(--text-dark);
+  line-height: 1.6;
+  margin: 0 0 0.3em;
+  font-family: 'Noto Sans JP', sans-serif;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.post-excerpt {
+  font-size: 0.78em;
+  color: var(--text-light);
+  margin: 0 0 0.4em;
+  line-height: 1.65;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.post-date { font-size: 0.72em; color: var(--text-light); margin: 0; }
+
+.more-wrap { text-align: center; margin-top: 1.8em; }
+.more-btn {
+  display: inline-block;
+  border: 2px solid var(--accent);
+  color: var(--accent-dark);
+  padding: 0.6em 2.2em;
+  border-radius: var(--radius-pill);
+  font-size: 0.88em;
+  font-weight: 700;
+  transition: background 0.25s, color 0.25s;
+}
+.more-btn:hover {
+  background: var(--accent);
+  color: var(--white);
+}
+
+/* ===== PICKUP ===== */
+.pickup-section { margin-bottom: 2em; }
+
+.pickup-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2em;
+}
+
+.pickup-card {
+  display: flex;
+  gap: 1.1em;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.pickup-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+  color: var(--text);
+}
+.pickup-thumb {
+  flex-shrink: 0;
+  width: 160px;
+  object-fit: cover;
+  background: var(--bg-warm);
+  overflow: hidden;
+}
+.pickup-thumb img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+.pickup-body {
+  flex: 1;
+  padding: 1em 1em 1em 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.3em;
+}
+.pickup-title {
+  font-size: 0.95em;
+  font-weight: 700;
+  color: var(--text-dark);
+  line-height: 1.6;
+  margin: 0;
+  font-family: 'Noto Sans JP', sans-serif;
+}
+.pickup-excerpt {
+  font-size: 0.78em;
+  color: var(--text-light);
+  margin: 0;
+  line-height: 1.65;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.pickup-more {
+  font-size: 0.78em;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar { position: sticky; top: 80px; }
+
+.profile-widget { text-align: center; }
+.profile-avatar {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto 0.6em;
+  border: 3px solid var(--accent-light);
+}
+.profile-avatar img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+.profile-name {
+  font-weight: 700;
+  font-size: 0.95em;
+  color: var(--text-dark);
+  margin: 0 0 0.4em;
+  font-family: 'Noto Serif JP', serif;
+}
+.profile-bio {
+  font-size: 0.78em;
+  color: var(--text-light);
+  line-height: 1.75;
+  margin: 0 0 0.8em;
+  text-align: left;
+}
+.profile-btn {
+  display: inline-block;
+  background: var(--accent);
+  color: var(--white);
+  font-size: 0.78em;
+  padding: 0.4em 1.2em;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+  transition: background 0.2s;
+}
+.profile-btn:hover { background: var(--accent-dark); color: var(--white); }
+
+.cat-list { list-style: none; padding: 0; margin: 0; }
+.cat-list li { border-bottom: 1px solid var(--border-light); }
+.cat-list li:last-child { border-bottom: none; }
+.cat-list a {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.5em 0;
+  font-size: 0.85em;
+  color: var(--text);
+  transition: color 0.2s;
+}
+.cat-list a:hover { color: var(--accent-dark); }
+.cat-list-emoji { font-size: 1em; }
+
+.popular-list { list-style: none; padding: 0; margin: 0; }
+.popular-list li { border-bottom: 1px solid var(--border-light); }
+.popular-list li:last-child { border-bottom: none; }
+.popular-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6em;
+  padding: 0.6em 0;
+  font-size: 0.82em;
+  color: var(--text);
+  transition: color 0.2s;
+}
+.popular-item:hover { color: var(--accent-dark); }
+.popular-num {
+  flex-shrink: 0;
+  width: 1.4em; height: 1.4em;
+  background: var(--accent);
+  color: var(--white);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75em; font-weight: 700;
+  margin-top: 0.1em;
+}
+.popular-title {
+  line-height: 1.55;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ===== PROFILE BAND ===== */
+.profile-band {
+  padding: 3em 0 3.5em;
+  border-top: 1px solid var(--border-light);
+}
+.profile-band-inner {
+  display: flex;
+  align-items: center;
+  gap: 2em;
+  background: var(--bg-warm);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2em 2.5em;
+  box-shadow: var(--shadow-sm);
+}
+.profile-band-avatar {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 4px solid var(--white);
+  box-shadow: var(--shadow);
+}
+.profile-band-text { flex: 1; }
+.profile-band-name {
+  font-size: 0.8em;
+  color: var(--text-light);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin: 0 0 0.4em;
+}
+.profile-band-bio {
+  font-size: 0.88em;
+  color: var(--text);
+  line-height: 1.85;
+  margin: 0 0 1em;
+}
+.profile-band-btn {
+  display: inline-block;
+  border: 2px solid var(--accent);
+  color: var(--accent-dark);
+  padding: 0.45em 1.5em;
+  border-radius: var(--radius-pill);
+  font-size: 0.82em;
+  font-weight: 700;
+  transition: background 0.25s, color 0.25s;
+}
+.profile-band-btn:hover {
+  background: var(--accent);
+  color: var(--white);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .cat-grid { grid-template-columns: repeat(3, 1fr); }
+  .content-wrap { grid-template-columns: 1fr; }
+  .sidebar { position: static; }
+  .hero { flex-direction: column-reverse; gap: 1.5em; padding-top: 2em; }
+  .hero-visual { flex-direction: row; align-items: center; }
+  .hero-avatar { width: 110px; height: 110px; }
+}
+
+@media (max-width: 600px) {
+  .cat-grid { grid-template-columns: repeat(2, 1fr); gap: 0.6em; }
+  .post-thumb { width: 110px; }
+  .pickup-thumb { width: 110px; }
+  .profile-band-inner { flex-direction: column; text-align: center; padding: 1.5em 1.2em; }
+  .pickup-card { flex-direction: column; }
+  .pickup-thumb { width: 100%; height: 180px; }
+  .pickup-body { padding: 0.8em 1em 1em; }
+}
 </style>
